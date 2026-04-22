@@ -27,7 +27,7 @@ The plugin install step itself does not currently install `ml-intern` for you. T
 
 ## Install in Claude Code
 
-The `/plugin ...` commands below are Claude Code slash commands and should be run inside an active Claude Code session (not your regular shell terminal).
+The `/plugin ...` .
 
 Install `ml-intern` first (skip if already installed):
 
@@ -38,7 +38,7 @@ uv sync
 uv tool install -e .
 ```
 
-Then install this Claude plugin:
+Then install this Claude plugin (the commands below are Claude Code slash commands and should be run inside an active Claude Code session, not your regular shell terminal):
 
 ```bash
 /plugin marketplace add huggingface/mlintern-plugin
@@ -47,7 +47,9 @@ Then install this Claude plugin:
 /mlintern:setup
 ```
 
-## Example
+## Run it!
+
+Now, in your Claude Code session, you can do:
 
 ```bash
 /mlintern "fine-tune llama on my dataset"
