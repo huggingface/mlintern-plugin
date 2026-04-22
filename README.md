@@ -17,9 +17,11 @@ This plugin is experimental and may change frequently. Expect rough edges.
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 18+ (if you are already using Claude Code, you should already have this)
 - `ml-intern` installed and available on PATH
 - Auth configured for `ml-intern` (HF token and any model provider keys you use)
+
+The plugin install step itself does not currently install `ml-intern` for you. That keeps plugin install predictable across environments, but means `ml-intern` still needs to be installed separately on your machine.
 
 ## Install in Claude Code
 
