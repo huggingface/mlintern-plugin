@@ -27,6 +27,8 @@ The plugin install step itself does not currently install `ml-intern` for you. T
 
 ## Install in Claude Code
 
+The `/plugin ...` commands below are Claude Code slash commands and should be run inside an active Claude Code session (not your regular shell terminal).
+
 Install `ml-intern` first (skip if already installed):
 
 ```bash
