@@ -1,12 +1,21 @@
 {
+  "name": "huggingface-mlintern",
+  "owner": {
+    "name": "Hugging Face"
+  },
+  "metadata": {
+    "description": "ML Intern plugin for Claude Code.",
+    "version": "0.1.0"
+  },
   "plugins": [
     {
       "name": "mlintern",
-      "owner": "huggingface",
-      "repo": "mlintern-plugin",
-      "path": "plugins/mlintern",
+      "description": "Use ml-intern from inside Claude Code.",
       "version": "0.1.0",
-      "description": "Use ml-intern from inside Claude Code."
+      "author": {
+        "name": "Hugging Face"
+      },
+      "source": "./plugins/mlintern"
     }
   ]
 }
