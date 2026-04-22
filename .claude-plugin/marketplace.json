@@ -2,7 +2,7 @@
   "plugins": [
     {
       "name": "mlintern",
-      "owner": "abidlabs",
+      "owner": "huggingface",
       "repo": "mlintern-plugin",
       "path": "plugins/mlintern",
       "version": "0.1.0",

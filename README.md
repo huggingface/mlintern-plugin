@@ -2,6 +2,10 @@
 
 Use `ml-intern` from inside Claude Code.
 
+## Experimental
+
+This plugin is experimental and may change frequently. Expect rough edges.
+
 ## What this plugin provides
 
 - `/mlintern "fine-tune a model"` to run an ML Intern task
@@ -20,8 +24,8 @@ Use `ml-intern` from inside Claude Code.
 ## Install in Claude Code
 
 ```bash
-/plugin marketplace add abidlabs/mlintern-plugin
-/plugin install mlintern@abidlabs-mlintern
+/plugin marketplace add huggingface/mlintern-plugin
+/plugin install mlintern@huggingface-mlintern
 /reload-plugins
 /mlintern:setup
 ```
