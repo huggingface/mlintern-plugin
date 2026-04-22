@@ -1,0 +1,10 @@
+{
+  "name": "mlintern-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Claude Code plugin for ml-intern",
+  "type": "module",
+  "scripts": {
+    "check": "node plugins/mlintern/scripts/mlintern-companion.mjs setup --json"
+  }
+}

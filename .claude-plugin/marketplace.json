@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    {
+      "name": "mlintern",
+      "owner": "abidlabs",
+      "repo": "mlintern-plugin",
+      "path": "plugins/mlintern",
+      "version": "0.1.0",
+      "description": "Use ml-intern from inside Claude Code."
+    }
+  ]
+}

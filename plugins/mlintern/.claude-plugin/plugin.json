@@ -1,0 +1,8 @@
+{
+  "name": "mlintern",
+  "version": "0.1.0",
+  "description": "Run ml-intern tasks from Claude Code.",
+  "author": {
+    "name": "abidlabs"
+  }
+}
