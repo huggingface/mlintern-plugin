@@ -1,6 +1,6 @@
 {
   "name": "mlintern",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Run ml-intern tasks from Claude Code.",
   "author": {
     "name": "Hugging Face"
