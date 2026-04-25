@@ -52,7 +52,8 @@ Then install this Claude plugin (the commands below are Claude Code slash comman
 Now, in your Claude Code session, you can do:
 
 ```bash
-/mlintern:run --background "Find an Urdu speech dataset and fine-tune a small Whisper model in under 1 hour, evaluate WER, and share the model link and metrics."
+/mlintern:run --background "Find an Urdu speech dataset and fine-tune a small Whisper model \
+in under 1 hour, evaluate WER, and share the model link and metrics."
 /mlintern:run --status
 /mlintern:run --result
 ```
