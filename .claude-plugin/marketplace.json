@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "ML Intern plugin for Claude Code.",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "plugins": [
     {
       "name": "mlintern",
       "description": "Use ml-intern from inside Claude Code.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "Hugging Face"
       },
