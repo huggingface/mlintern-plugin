@@ -52,8 +52,8 @@ Then install this Claude plugin (the commands below are Claude Code slash comman
 Now, in your Claude Code session, you can do:
 
 ```bash
-/mlintern:run --background "Fine-tune a small Whisper model for Arabic speech recognition on a GPU under 5 dollars \
-and compare the finetuned model's metrics to the original model's."
+/mlintern:run --background "Fine-tune a small Whisper model for Arabic speech recognition \
+ on a GPU under 5 dollars and compare the fine-tuned model's metrics to the original model."
 /mlintern:run --status
 /mlintern:run --result
 ```
