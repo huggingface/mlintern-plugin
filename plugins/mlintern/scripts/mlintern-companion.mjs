@@ -133,6 +133,42 @@ function runMlInternSync(cwd, prompt, modelName = null) {
   };
 }
 
+async function runMlInternStreaming(cwd, prompt, modelName = null) {
+  return await new Promise((resolve) => {
+    const child = spawn("ml-intern", buildMlInternArgs(prompt, modelName), {
+      cwd
+    });
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", (chunk) => {
+      const text = chunk.toString();
+      stdout += text;
+      process.stdout.write(text);
+    });
+    child.stderr.on("data", (chunk) => {
+      const text = chunk.toString();
+      stderr += text;
+      process.stderr.write(text);
+    });
+    child.on("error", (error) => {
+      const message = error?.message || "Failed to start ml-intern.";
+      resolve({
+        status: 1,
+        stdout,
+        stderr: stderr ? `${stderr}\n${message}` : message
+      });
+    });
+    child.on("close", (code) => {
+      resolve({
+        status: code ?? 1,
+        stdout,
+        stderr
+      });
+    });
+  });
+}
+
 function buildSetupPayload(cwd) {
   const workspaceRoot = resolveWorkspaceRoot(cwd);
   const nodeStatus = binaryAvailable("node", ["--version"], cwd);
@@ -250,15 +286,21 @@ async function handleRun(argv) {
   const background = Boolean(options.background) && !options.wait;
 
   if (!background) {
-    const result = runMlInternSync(cwd, prompt, modelName);
+    const result = asJson
+      ? runMlInternSync(cwd, prompt, modelName)
+      : await runMlInternStreaming(cwd, prompt, modelName);
     const payload = {
       status: result.status,
       stdout: result.stdout,
       stderr: result.stderr,
       model: modelName || null
     };
-    const rendered = result.stdout || result.stderr || "(no output)";
-    output(payload, rendered, asJson);
+    if (asJson) {
+      const rendered = result.stdout || result.stderr || "(no output)";
+      output(payload, rendered, asJson);
+    } else if (!result.stdout && !result.stderr) {
+      process.stdout.write("(no output)\n");
+    }
     if (result.status !== 0) {
       process.exitCode = result.status;
     }
