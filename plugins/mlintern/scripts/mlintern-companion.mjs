@@ -22,7 +22,7 @@ function printUsage() {
     [
       "Usage:",
       " node scripts/mlintern-companion.mjs setup [--json] [--cwd path]",
-      " node scripts/mlintern-companion.mjs run [--background|--wait] [--status [job-id]|--result [job-id]|--cancel [job-id]] [--json] [--cwd path] \"prompt\"",
+      " node scripts/mlintern-companion.mjs run [--background|--wait] [--model id] [--status [job-id]|--result [job-id]|--cancel [job-id]] [--json] [--cwd path] \"prompt\"",
       " node scripts/mlintern-companion.mjs worker --cwd path --job-id id",
       " node scripts/mlintern-companion.mjs status [job-id] [--json] [--cwd path]",
       " node scripts/mlintern-companion.mjs result [job-id] [--json] [--cwd path]",
@@ -94,8 +94,27 @@ function chooseJob(cwd, reference = "") {
   throw new Error(`No job found for "${reference}".`);
 }
 
-function runMlInternSync(cwd, prompt) {
-  const result = spawnSync("ml-intern", [prompt], {
+function resolveModelOption(options) {
+  if (!Object.hasOwn(options, "model")) {
+    return null;
+  }
+  if (typeof options.model !== "string" || !options.model.trim()) {
+    throw new Error("Provide a model id after --model. Example: --model huggingface/openai/gpt-oss-120b");
+  }
+  return options.model.trim();
+}
+
+function buildMlInternArgs(prompt, modelName) {
+  const args = [];
+  if (modelName) {
+    args.push("--model", modelName);
+  }
+  args.push(prompt);
+  return args;
+}
+
+function runMlInternSync(cwd, prompt, modelName = null) {
+  const result = spawnSync("ml-intern", buildMlInternArgs(prompt, modelName), {
     cwd,
     encoding: "utf8",
     maxBuffer: 1024 * 1024 * 20
@@ -208,6 +227,7 @@ async function handleRun(argv) {
   const { options, positionals } = parseArgs(argv);
   const cwd = options.cwd ? path.resolve(process.cwd(), options.cwd) : process.cwd();
   const asJson = Boolean(options.json);
+  const modelName = resolveModelOption(options);
   if (Object.hasOwn(options, "status")) {
     const reference = typeof options.status === "string" ? options.status : positionals[0] || "";
     await handleStatus(reference ? [reference, "--cwd", cwd, ...(asJson ? ["--json"] : [])] : ["--cwd", cwd, ...(asJson ? ["--json"] : [])]);
@@ -230,11 +250,12 @@ async function handleRun(argv) {
   const background = Boolean(options.background) && !options.wait;
 
   if (!background) {
-    const result = runMlInternSync(cwd, prompt);
+    const result = runMlInternSync(cwd, prompt, modelName);
     const payload = {
       status: result.status,
       stdout: result.stdout,
-      stderr: result.stderr
+      stderr: result.stderr,
+      model: modelName || null
     };
     const rendered = result.stdout || result.stderr || "(no output)";
     output(payload, rendered, asJson);
@@ -254,6 +275,7 @@ async function handleRun(argv) {
     summary: firstLine(prompt, "ml-intern task"),
     status: "queued",
     prompt,
+    model: modelName,
     logFile
   };
   writeJobFile(cwd, jobId, job);
@@ -264,7 +286,7 @@ async function handleRun(argv) {
   writeJobFile(cwd, jobId, queued);
   upsertJob(cwd, queued);
   appendLog(cwd, jobId, `Worker started with pid ${pid}.`);
-  const payload = { jobId, status: "running", summary: queued.summary };
+  const payload = { jobId, status: "running", summary: queued.summary, model: modelName || null };
   const rendered = `ML Intern task started in background as ${jobId}. Check /mlintern:run --status ${jobId} for progress.`;
   output(payload, rendered, asJson);
 }
@@ -286,7 +308,7 @@ async function handleWorker(argv) {
   upsertJob(cwd, started);
   appendLog(cwd, jobId, "Background execution started.");
 
-  const child = spawn("ml-intern", [job.prompt], { cwd });
+  const child = spawn("ml-intern", buildMlInternArgs(job.prompt, job.model || null), { cwd });
   let stdout = "";
   let stderr = "";
   child.stdout.on("data", (chunk) => {
