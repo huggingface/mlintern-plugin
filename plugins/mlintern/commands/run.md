@@ -1,6 +1,6 @@
 ---
-description: Run an ml-intern task
-argument-hint: '[--background|--wait] [prompt]'
+description: Run an ml-intern task and manage background jobs
+argument-hint: '[--background|--wait|--status [job-id]|--result [job-id]|--cancel [job-id]] [prompt]'
 disable-model-invocation: true
 allowed-tools: Bash(node:*)
 ---

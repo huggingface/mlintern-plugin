@@ -22,7 +22,7 @@ function printUsage() {
     [
       "Usage:",
       " node scripts/mlintern-companion.mjs setup [--json] [--cwd path]",
-      " node scripts/mlintern-companion.mjs run [--background|--wait] [--json] [--cwd path] \"prompt\"",
+      " node scripts/mlintern-companion.mjs run [--background|--wait] [--status [job-id]|--result [job-id]|--cancel [job-id]] [--json] [--cwd path] \"prompt\"",
       " node scripts/mlintern-companion.mjs worker --cwd path --job-id id",
       " node scripts/mlintern-companion.mjs status [job-id] [--json] [--cwd path]",
       " node scripts/mlintern-companion.mjs result [job-id] [--json] [--cwd path]",
@@ -125,7 +125,7 @@ function buildSetupPayload(cwd) {
     node: nodeStatus,
     mlIntern: mlInternStatus,
     nextSteps: ready
-      ? ["Run `/mlintern \"fine-tune a model\"`."]
+      ? ["Run `/mlintern:run \"fine-tune a model\"`."]
       : ["Install ml-intern and ensure it is on PATH.", "Then rerun `/mlintern:setup`."]
   };
 }
@@ -207,11 +207,26 @@ async function handleSetup(argv) {
 async function handleRun(argv) {
   const { options, positionals } = parseArgs(argv);
   const cwd = options.cwd ? path.resolve(process.cwd(), options.cwd) : process.cwd();
+  const asJson = Boolean(options.json);
+  if (Object.hasOwn(options, "status")) {
+    const reference = typeof options.status === "string" ? options.status : positionals[0] || "";
+    await handleStatus(reference ? [reference, "--cwd", cwd, ...(asJson ? ["--json"] : [])] : ["--cwd", cwd, ...(asJson ? ["--json"] : [])]);
+    return;
+  }
+  if (Object.hasOwn(options, "result")) {
+    const reference = typeof options.result === "string" ? options.result : positionals[0] || "";
+    await handleResult(reference ? [reference, "--cwd", cwd, ...(asJson ? ["--json"] : [])] : ["--cwd", cwd, ...(asJson ? ["--json"] : [])]);
+    return;
+  }
+  if (Object.hasOwn(options, "cancel")) {
+    const reference = typeof options.cancel === "string" ? options.cancel : positionals[0] || "";
+    await handleCancel(reference ? [reference, "--cwd", cwd, ...(asJson ? ["--json"] : [])] : ["--cwd", cwd, ...(asJson ? ["--json"] : [])]);
+    return;
+  }
   const prompt = positionals.join(" ").trim();
   if (!prompt) {
-    throw new Error("Provide a prompt. Example: /mlintern \"fine-tune a model\".");
+    throw new Error("Provide a prompt. Example: /mlintern:run \"fine-tune a model\".");
   }
-  const asJson = Boolean(options.json);
   const background = Boolean(options.background) && !options.wait;
 
   if (!background) {
@@ -250,7 +265,7 @@ async function handleRun(argv) {
   upsertJob(cwd, queued);
   appendLog(cwd, jobId, `Worker started with pid ${pid}.`);
   const payload = { jobId, status: "running", summary: queued.summary };
-  const rendered = `ML Intern task started in background as ${jobId}. Check /mlintern:status ${jobId} for progress.`;
+  const rendered = `ML Intern task started in background as ${jobId}. Check /mlintern:run --status ${jobId} for progress.`;
   output(payload, rendered, asJson);
 }
 
@@ -335,7 +350,7 @@ async function handleResult(argv) {
   const reference = positionals[0] || "";
   const job = refreshActiveJob(cwd, chooseJob(cwd, reference));
   if (["queued", "running"].includes(job.status)) {
-    throw new Error(`Job ${job.id} is still ${job.status}. Run /mlintern:status ${job.id}.`);
+    throw new Error(`Job ${job.id} is still ${job.status}. Run /mlintern:run --status ${job.id}.`);
   }
   const text = job.output || job.errorOutput || job.errorMessage || "No result output captured.";
   const payload = { job, output: text };

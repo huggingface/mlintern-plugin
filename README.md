@@ -10,12 +10,12 @@ This plugin is experimental and may change frequently. Expect rough edges.
 
 ## What this plugin provides
 
-- `/mlintern "fine-tune a model"` to run an ML Intern task
-- `/mlintern --background "..."` to run in background
-- `/mlintern:status` to check running/recent jobs
-- `/mlintern:result [job-id]` to fetch final output
-- `/mlintern:cancel [job-id]` to cancel a running job
 - `/mlintern:setup` to verify local setup
+- `/mlintern:run "fine-tune a model"` to run an ML Intern task
+- `/mlintern:run --background "..."` to run in background
+- `/mlintern:run --status [job-id]` to check running/recent jobs
+- `/mlintern:run --result [job-id]` to fetch final output
+- `/mlintern:run --cancel [job-id]` to cancel a running job
 
 ## Requirements
 
@@ -52,7 +52,7 @@ Then install this Claude plugin (the commands below are Claude Code slash comman
 Now, in your Claude Code session, you can do:
 
 ```bash
-/mlintern --background "Find an Urdu speech dataset and fine-tune a small Whisper model in under 1 hour, evaluate WER, and share the model link and metrics.
-/mlintern:status
-/mlintern:result
+/mlintern:run --background "Find an Urdu speech dataset and fine-tune a small Whisper model in under 1 hour, evaluate WER, and share the model link and metrics."
+/mlintern:run --status
+/mlintern:run --result
 ```
